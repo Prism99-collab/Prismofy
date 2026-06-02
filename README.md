@@ -43,12 +43,6 @@ Tick **Multiple Links** to queue several at once, or paste a playlist URL to pic
 
 ---
 
-## 🟢 About Spotify
-
-Spotify audio is **DRM-protected** and cannot be downloaded directly — no tool can, and Prismofy does not attempt to bypass DRM. Instead, when you paste a Spotify link, Prismofy reads the public track **metadata** (title + artist) and downloads the **matching song from YouTube**. The audio therefore comes from YouTube, not Spotify, and is a closest-match (usually exact). Podcasts/episodes are not supported.
-
----
-
 ## ⚖️ Legal
 
 Prismofy is a front-end for yt-dlp. Only download content you have the right to download. Respect the terms of service of the sites you use and applicable copyright law. The authors take no responsibility for misuse.
