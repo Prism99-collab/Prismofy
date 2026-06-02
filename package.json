@@ -1,0 +1,78 @@
+{
+  "name": "prismofy",
+  "version": "1.0.0",
+  "description": "Prismofy — Just Download Anything. A lightweight tray-based video/audio/image downloader for Windows, powered by yt-dlp and ffmpeg. Supports YouTube, SoundCloud, Spotify links (via match), direct files, and more.",
+  "main": "main.js",
+  "author": {
+    "name": "Prism99",
+    "url": "https://github.com/Prism99-collab"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Prism99-collab/Prismofy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Prism99-collab/Prismofy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Prism99-collab/Prismofy/issues"
+  },
+  "keywords": [
+    "downloader",
+    "yt-dlp",
+    "ffmpeg",
+    "youtube",
+    "soundcloud",
+    "spotify",
+    "video",
+    "audio",
+    "mp3",
+    "electron",
+    "windows",
+    "tray"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "pack": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.prism99.prismofy",
+    "productName": "Prismofy",
+    "copyright": "Copyright © 2026 Prism99. Based on the macOS original by arinltte.",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "Prismofy-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Prismofy",
+      "uninstallDisplayName": "Prismofy"
+    }
+  }
+}

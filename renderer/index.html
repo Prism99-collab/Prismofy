@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline';" />
+  <title>Prismofy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="rareJade">
+  <!-- Animated frosted-glass background layers -->
+  <div class="ambient">
+    <div class="layer base"></div>
+    <div class="layer center-dark"></div>
+    <div class="layer glow glow1"></div>
+    <div class="layer glow glow2"></div>
+    <div class="layer wash"></div>
+  </div>
+
+  <div class="app">
+    <!-- Draggable header -->
+    <div id="titlebar" class="titlebar">
+      <img src="logo.jpg" class="tb-logo" alt="" />
+      <span class="tb-title">Prismofy</span>
+      <span class="tb-spacer"></span>
+      <button id="tb-pin" class="tb-btn" title="Pin (keep open)">&#128204;</button>
+      <button id="tb-close" class="tb-btn" title="Close to tray">&#10005;</button>
+    </div>
+
+    <!-- Setup overlay -->
+    <section id="setup" class="screen setup hidden">
+      <div class="setup-inner">
+        <div id="setup-spinner" class="spinner"></div>
+        <div id="setup-error-icon" class="setup-error-icon hidden">&#9888;</div>
+        <div id="setup-title" class="setup-title">Checking Environment…</div>
+        <div id="setup-text" class="setup-text mono">Checking environment…</div>
+        <div id="setup-actions" class="setup-actions hidden">
+          <button id="setup-exit" class="btn-small">Exit</button>
+          <button id="setup-retry" class="btn-small">Retry</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section id="main" class="screen main">
+      <!-- URL input (single) -->
+      <div id="url-single" class="url-single">
+        <input id="url-input" type="text" placeholder="Paste video link here…" spellcheck="false" autocomplete="off" />
+        <button id="url-clear" class="icon-btn hidden" title="Clear">&#10005;</button>
+      </div>
+      <!-- URL input (multiple) -->
+      <div id="url-multi" class="url-multi hidden">
+        <textarea id="url-textarea" placeholder="Paste video links (one per line)…" spellcheck="false"></textarea>
+        <button id="multi-collapse" class="collapse-btn" title="Collapse">&#9650;</button>
+      </div>
+
+      <!-- Multiple links toggle -->
+      <label class="checkbox-row">
+        <input id="multi-toggle" type="checkbox" />
+        <span>Multiple Links</span>
+      </label>
+
+      <!-- Format selection -->
+      <div class="format-row">
+        <div class="segmented">
+          <button data-type="video" class="seg active">Video</button>
+          <button data-type="audio" class="seg">Audio</button>
+          <button data-type="image" class="seg">Image</button>
+        </div>
+        <select id="video-format" class="dropdown"></select>
+        <select id="audio-format" class="dropdown hidden"></select>
+        <select id="image-format" class="dropdown hidden"></select>
+        <span id="ffmpeg-warn" class="ffmpeg-warn hidden" title="ffmpeg not found. Merging/converting may not work.">&#9888;</span>
+      </div>
+
+      <!-- Video info / playlist -->
+      <div id="info-area" class="info-area"></div>
+
+      <!-- Info error -->
+      <div id="info-error" class="inline-msg orange hidden"></div>
+
+      <div class="spacer"></div>
+
+      <!-- Download section -->
+      <div class="download-section">
+        <div id="dl-complete" class="inline-msg green hidden"></div>
+        <div id="dl-error" class="inline-msg red hidden"></div>
+
+        <div id="dl-progress" class="dl-progress hidden">
+          <button id="stop-btn" class="stop-btn">&#9632; Stop</button>
+          <div class="progress-wrap">
+            <div class="bar"><div id="bar-fill" class="bar-fill"></div></div>
+            <div id="progress-text" class="progress-text mono"></div>
+          </div>
+          <div id="progress-pct" class="progress-pct mono">0%</div>
+        </div>
+
+        <button id="download-btn" class="download-btn" disabled>
+          <span class="dl-icon">&#11015;</span> Download
+        </button>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="screen settings hidden">
+      <div class="row-head">
+        <span class="title">Settings</span>
+        <button id="about-btn" class="icon-btn" title="About">&#9432;</button>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Download Folder</div>
+        <div class="field-row">
+          <span id="folder-path" class="mono ellipsis"></span>
+          <button id="choose-folder" class="btn-small">Choose</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <div class="swatches" id="swatches">
+          <button class="swatch" data-theme="default"  style="--sw:#2f7bff" title="Default"></button>
+          <button class="swatch" data-theme="rareJade"  style="--sw:#40a68c" title="Rare Jade"></button>
+          <button class="swatch" data-theme="deepOcean" style="--sw:#3380f2" title="Deep Ocean"></button>
+          <button class="swatch" data-theme="floral"    style="--sw:#dc308f" title="Floral"></button>
+        </div>
+        <div class="field-row">
+          <span class="muted">Custom accent</span>
+          <div class="accent-ctl">
+            <input id="accent-color" type="color" value="#40a68c" />
+            <button id="accent-reset" class="btn-small">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-row"><input id="opt-pin" type="checkbox" /><span>Pin panel (stay open when clicking away)</span></label>
+        <label class="checkbox-row"><input id="opt-rempos" type="checkbox" /><span>Remember panel position</span></label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <div class="field-label">Post-Processing</div>
+        <label class="checkbox-row"><input id="opt-thumb" type="checkbox" /><span>Embed Thumbnail</span></label>
+        <label class="checkbox-row"><input id="opt-meta" type="checkbox" /><span>Embed Metadata</span></label>
+        <label class="checkbox-row"><input id="opt-subs" type="checkbox" /><span>Download Subtitles</span></label>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Browser cookies (for Instagram & private/social media)</div>
+        <div class="field-row">
+          <span class="muted">Use logins from</span>
+          <select id="cookie-browser" class="dropdown">
+            <option value="none">None</option>
+            <option value="chrome">Chrome</option>
+            <option value="edge">Edge</option>
+            <option value="firefox">Firefox</option>
+            <option value="brave">Brave</option>
+            <option value="opera">Opera</option>
+            <option value="vivaldi">Vivaldi</option>
+            <option value="chromium">Chromium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <div class="field-label">Format Priority</div>
+        <div class="field-row">
+          <span class="muted">Reorder video and audio formats</span>
+          <button id="edit-priority" class="btn-small">Edit</button>
+        </div>
+      </div>
+
+      <div id="ffmpeg-note" class="inline-msg orange hidden">
+        &#9888; ffmpeg not found. Install it and add to PATH for merging/conversion.
+      </div>
+    </section>
+
+    <!-- Format priority -->
+    <section id="priority" class="screen priority hidden">
+      <div class="row-head">
+        <span class="title">Format Priority</span>
+        <button id="reset-priority" class="btn-small">Reset</button>
+      </div>
+      <div class="priority-cols">
+        <div class="priority-col">
+          <div class="field-label">Video</div>
+          <ul id="video-priority" class="sort-list"></ul>
+        </div>
+        <div class="priority-col">
+          <div class="field-label">Audio</div>
+          <ul id="audio-priority" class="sort-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="screen about hidden">
+      <div class="title center">About</div>
+      <div class="about-app">
+        <img src="logo.jpg" class="about-logo" alt="Prismofy" />
+        <div class="about-name">Prismofy</div>
+        <div class="muted">Version 1.0.0 (Windows)</div>
+      </div>
+      <div class="field">
+        <div class="field-row">
+          <span>Theme</span>
+          <select id="theme-select" class="dropdown">
+            <option value="default">Default</option>
+            <option value="rareJade">Rare Jade</option>
+            <option value="deepOcean">Deep Ocean</option>
+            <option value="floral">Floral</option>
+          </select>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="about-footer center muted">
+        <div>Based on the macOS original by <a href="#" data-ext="https://github.com/arinltte">arinltte</a></div>
+        <div>Prismofy — Windows edition</div>
+      </div>
+    </section>
+
+    <!-- Bottom bar -->
+    <div id="bottom-bar" class="bottom-bar hidden">
+      <button id="bb-back" class="bb-btn">&#9881;</button>
+      <button id="bb-folder" class="bb-btn">&#128193;</button>
+      <button id="bb-exit" class="bb-btn">Exit</button>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
